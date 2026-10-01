@@ -2588,7 +2588,7 @@ challenges:
     - Does it avoid promising recovery when no LTR backup exists?
 
   - id: az-del-04
-    task: "How do I stop anyone from deleting our Azure PostgreSQL Flexible Server again?"
+    task: "How do I add a delete lock so nobody can delete our Azure PostgreSQL Flexible Server again?"
     difficulty: medium
     target_skill: plugin/skills/postgresql-best-practices/references/azure-postgresql-restore-deleted-server
     platform_scope: azure-postgresql
