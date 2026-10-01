@@ -247,7 +247,7 @@ Each Azure sub-skill also covers **Azure HorizonDB (Preview)** in an *On Azure H
 | **azure-postgresql-entra-id-auth** | Passwordless auth with Entra ID | Token refresh before 5-min expiry, managed identity setup |
 | **azure-postgresql-connection-pooling** | Built-in PgBouncer configuration | Prepared statements break in transaction mode |
 | **azure-postgresql-ha-disaster-recovery** | Zone-redundant HA, PITR, geo-replicas | Forced vs planned failover, PITR creates NEW server |
-| **azure-postgresql-restore-deleted-server** | Recovering a deleted server, delete locks | 5-day window, `ReviveDropped` REST call (no `az` command), same subscription/region, HorizonDB clusters unrecoverable |
+| **azure-postgresql-restore-deleted-server** | Recovering a deleted server, delete locks | 5-day window, `ReviveDropped` via `az rest` (no `az postgres flexible-server` subcommand), same subscription/region, HorizonDB clusters unrecoverable |
 | **azure-postgresql-networking-ssl** | Private endpoints, VNet, SSL | VNet chosen at creation (can't change), DigiCert G2 cert |
 | **azure-postgresql-provisioning** | IaC, SKU selection, scaling | Burstable limits, storage can't shrink, IOPS scaling |
 | **azure-postgresql-extension-lifecycle** | Extension allowlisting on Azure | `azure.extensions` param, `azure_pg_admin` role requirement |

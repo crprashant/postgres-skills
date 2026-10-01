@@ -76,15 +76,18 @@ For a deleted **VNet-integrated** server, add inside `properties`:
 **3. Submit the revive (confirm first — creates a new billable server):**
 
 ```bash
-az rest --method put \
-    --url "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{targetResourceGroup}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{newServerName}?api-version=2025-08-01" \
+az rest --method put --subscription <subscription-id> \
+    --url "https://management.azure.com/subscriptions/{subscription-id}/resourceGroups/{target-rg}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{new-server-name}?api-version=2025-08-01" \
     --body @revive.json
 ```
+
+Put the deleted server's subscription ID in the URL explicitly. Don't use the `{subscriptionId}` token, which `az rest` fills from the current `az account set` context and can silently target the wrong subscription.
 
 **4. Monitor provisioning (read-only).** Duration depends on database size and the original compute. Track the activity-log operation *Update PostgreSQL Server Create*, or poll:
 
 ```bash
-az postgres flexible-server show --resource-group <target-rg> --name <new-server-name> \
+az postgres flexible-server show --subscription <subscription-id> \
+    --resource-group <target-rg> --name <new-server-name> \
     --query "{state:state, fqdn:fullyQualifiedDomainName, version:version}" -o json
 ```
 
@@ -108,7 +111,7 @@ az postgres flexible-server show --resource-group <target-rg> --name <new-server
 
 ```bash
 az lock create --name PreventDelete --lock-type CanNotDelete \
-    --resource-group <rg> \
+    --subscription <subscription-id> --resource-group <rg> \
     --resource-type Microsoft.DBforPostgreSQL/flexibleServers \
     --resource-name <server-name>
 ```
