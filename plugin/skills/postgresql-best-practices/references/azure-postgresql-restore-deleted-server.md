@@ -8,7 +8,7 @@ tags: [azure, postgresql, restore, deleted-server, revive-dropped, resource-lock
 
 > **Response focus:** Lead with the 5-day window and the `ReviveDropped` REST call (api-version `2025-08-01`). Recovery is best-effort, the revived server is a NEW resource, and there is no `az postgres flexible-server` command for it. Do not explain generic backup theory.
 
-> **Shell execution:** Activity-log lookups and `show` commands are read-only — run them directly. The revive `PUT` creates a billable server: show subscription, target resource group, new server name, region, and source `resourceId`, then ask "Proceed?" before running it.
+> **Shell execution:** Activity-log lookups and `show` commands are read-only — run them directly. Two commands change state and need confirmation first. For the revive `PUT` (creates a billable server), show subscription, target resource group, new server name, region, and source `resourceId`. For `az lock create`, show subscription, resource group, target resource, and lock type. Then ask "Proceed?"
 
 > **NEVER suggest for Azure:** `pg_basebackup`, `pg_hba.conf`, `postgresql.conf`, `systemctl`, `sudo`, `/var/lib/postgresql`, or restoring "from the data directory". There is no OS or file access, and the deleted server's backups are Microsoft-managed.
 
@@ -45,11 +45,11 @@ tags: [azure, postgresql, restore, deleted-server, revive-dropped, resource-lock
 ```bash
 az monitor activity-log list --subscription <subscription-id> --offset 6d \
     --namespace Microsoft.DBforPostgreSQL \
-    --query "[?ends_with(operationName.value, '/delete')].{op:operationName.value, status:status.value, resourceId:resourceId, submissionTimestamp:submissionTimestamp}" \
+    --query "[?ends_with(operationName.value, '/delete') && status.value=='Succeeded'].{op:operationName.value, resourceId:resourceId, submissionTimestamp:submissionTimestamp}" \
     -o table
 ```
 
-Pick the `.../flexibleServers/delete` event for the right server (ignore `.../databases/delete`). Portal equivalent: **Monitor → Activity log →** Operation = *Delete PostgreSQL server* → event → **JSON** tab.
+Use only `Succeeded` events. Started, Failed, or Canceled delete attempts carry the wrong timestamp; if no delete succeeded, check whether the server still exists before going further. Pick the `.../flexibleServers/delete` event for the right server (ignore `.../databases/delete`). Portal equivalent: **Monitor → Activity log →** Operation = *Delete PostgreSQL server*, Status = *Succeeded* → event → **JSON** tab.
 
 **2. Write the request body** (`revive.json`):
 
@@ -109,6 +109,8 @@ az postgres flexible-server show --subscription <subscription-id> \
 
 ## Prevent Accidental Deletion
 
+State-changing — confirm subscription, resource group, server, and lock type first:
+
 ```bash
 az lock create --name PreventDelete --lock-type CanNotDelete \
     --subscription <subscription-id> --resource-group <rg> \
@@ -128,15 +130,18 @@ az lock create --name PreventDelete --lock-type CanNotDelete \
 - Do NOT claim a deleted server can be revived into a different subscription or region
 - Do NOT claim the revive is in-place or that settings and connection strings carry over automatically
 - Do NOT claim resource locks prevent `DROP DATABASE` or other data-plane changes
-- Do NOT apply Flexible Server `ReviveDropped` to Azure HorizonDB
+- Do NOT apply Flexible Server `ReviveDropped` to Azure HorizonDB, or claim a deleted HorizonDB cluster can be restored
 
 ## On Azure HorizonDB (Preview)
 
-- **Deleted HorizonDB clusters can't be restored today.** There's no `ReviveDropped` equivalent; do not send Flexible Server requests to `Microsoft.HorizonDB`.
-- Prevention is the only control: add a **Delete** resource lock on the cluster (portal: cluster → **Locks** → **Add**, type *Delete*).
-- For bad data inside a still-existing cluster, use HorizonDB point-in-time restore (creates a new cluster; fixed 7-day retention).
+- **Deleted HorizonDB clusters can't be restored today.** Microsoft Learn states it in both the business-continuity and security guidance.
+- **No deleted-cluster restore path:** `Microsoft.HorizonDb/clusters` `createMode` only allows `Create`, `PointInTimeRestore`, and `Update` (no `ReviveDropped`). `az horizondb restore --source-cluster` and `PointInTimeRestore` both need an **existing** source cluster.
+- **Never** send a Flexible Server `ReviveDropped` request to `Microsoft.HorizonDb`, or run `az horizondb restore` against a deleted cluster.
+- **Don't promise recovery.** The HorizonDB backup-billing page mentions backups retained after a database is deleted, but there's no documented restore procedure. If the data is critical, open an Azure support request right away.
+- **Prevention is the control:** add a **Delete** resource lock to the cluster (portal: cluster → **Locks** → **Add**, type *Delete*). Confirm before creating it.
+- **Bad data in a cluster that still exists:** use HorizonDB point-in-time restore (creates a new cluster; fixed 7-day retention).
 
-See [HorizonDB business continuity](https://learn.microsoft.com/azure/horizondb/backup-restore/concepts-business-continuity) and [HorizonDB resource locks](https://learn.microsoft.com/azure/horizondb/configure-maintain/how-to-enable-deletion-protection).
+See [HorizonDB business continuity](https://learn.microsoft.com/azure/horizondb/backup-restore/concepts-business-continuity), [HorizonDB security](https://learn.microsoft.com/azure/horizondb/security/security-overview#backup-and-recovery), [`az horizondb restore`](https://learn.microsoft.com/cli/azure/horizondb?view=azure-cli-latest#az-horizondb-restore), and [HorizonDB resource locks](https://learn.microsoft.com/azure/horizondb/configure-maintain/how-to-enable-deletion-protection).
 
 ## References
 - [Restore a deleted server](https://learn.microsoft.com/azure/postgresql/backup-restore/how-to-restore-deleted-server)

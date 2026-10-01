@@ -78,6 +78,8 @@ TEST_CASES = [
     ("Configure intelligent tuning for query performance on Azure", ["azure-postgresql-intelligent-tuning.md"], [], True),
     ("I accidentally deleted my Flexible Server yesterday, can I restore deleted server?", ["azure-postgresql-restore-deleted-server.md"], [], True),
     ("Add a CanNotDelete lock for deletion protection on my server", ["azure-postgresql-restore-deleted-server.md"], [], True),
+    ("I deleted my Azure HorizonDB cluster by mistake an hour ago", ["azure-postgresql-restore-deleted-server.md"], [], True),
+    ("I accidentally deleted a table on my Azure PostgreSQL server", [], ["azure-postgresql-restore-deleted-server.md"], True),
     ("Restore deleted server using ReviveDropped", [], ["azure-postgresql-restore-deleted-server.md"], False),
     ("Configure DiskANN index for vector search", [], ["azure-postgresql-vector-diskann.md"], False),
     ("Authenticate with Entra ID", [], ["azure-postgresql-entra-id-auth.md"], False),

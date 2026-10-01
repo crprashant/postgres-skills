@@ -2550,8 +2550,8 @@ challenges:
     - five days|5 days|5-day
     - submissionTimestamp|activity log
     anti_patterns:
-    - pg_basebackup
-    - az postgres flexible-server undelete
+    - ^\s*(?:\$\s*)?pg_basebackup\b
+    - ^\s*(?:\$\s*)?az postgres flexible-server (?:undelete|restore-deleted|revive)\b
     correctness_checks:
     - Does the response state that a deleted server can only be recovered within five days of deletion and that success is not guaranteed?
     - Does it find the resourceId and submissionTimestamp from the Delete PostgreSQL Server activity-log event?
@@ -4334,10 +4334,12 @@ challenges:
       - "can't be restored|cannot be restored|not recoverable|unrecoverable|can't restore"
       - "lock"
     anti_patterns:
-      - "ReviveDropped"
-      - "az postgres flexible-server"
+      - "\"createMode\"\\s*:\\s*\"ReviveDropped\""
+      - "^\\s*(?:\\$\\s*)?az postgres flexible-server\\s"
+      - "^\\s*(?:\\$\\s*)?az horizondb restore\\b"
     correctness_checks:
-      - "Does the response state that deleted Azure HorizonDB clusters can't currently be restored, instead of applying the Flexible Server ReviveDropped workflow?"
+      - "Does the response state that deleted Azure HorizonDB clusters can't currently be restored, instead of applying the Flexible Server ReviveDropped workflow (a correct answer may name ReviveDropped only to rule it out)?"
+      - "Does it explain that HorizonDB restore (az horizondb restore / PointInTimeRestore) requires an existing source cluster?"
       - "Does it recommend a Delete resource lock to prevent future accidental deletion?"
 
   # extension-lifecycle

@@ -491,3 +491,15 @@ routing_challenges:
     expected_skill: "plugin/skills/postgresql-best-practices/references/azure-postgresql-restore-deleted-server"
     difficulty: hard
     notes: "HorizonDB deleted clusters can't be restored today; the reference says so and recommends Delete locks."
+
+  - id: route-hz-13
+    query: "I deleted my Azure HorizonDB cluster by mistake an hour ago. How do I restore it?"
+    expected_skill: "plugin/skills/postgresql-best-practices/references/azure-postgresql-restore-deleted-server"
+    difficulty: medium
+    notes: "Natural HorizonDB deletion phrasing (eval hz-del-01) must reach the deleted-server reference."
+
+  - id: route-del-04
+    query: "Someone deleted our production Azure Database for PostgreSQL Flexible Server three days ago. How do I get it back?"
+    expected_skill: "plugin/skills/postgresql-best-practices/references/azure-postgresql-restore-deleted-server"
+    difficulty: medium
+    notes: "Natural Flexible Server deletion phrasing (eval az-del-01)."
