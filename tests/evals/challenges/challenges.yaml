@@ -2540,7 +2540,7 @@ challenges:
 
   # restore-deleted-server
   - id: az-del-01
-    task: "Someone deleted our production Azure Database for PostgreSQL Flexible Server three days ago. How do I get it back?"
+    task: "Someone accidentally deleted our production Azure Database for PostgreSQL Flexible Server three days ago. How do I get it back?"
     difficulty: hard
     target_skill: plugin/skills/postgresql-best-practices/references/azure-postgresql-restore-deleted-server
     platform_scope: azure-postgresql
