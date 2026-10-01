@@ -347,6 +347,28 @@
       "always_load": false
     },
     {
+      "id": "restore-deleted-server",
+      "path": "plugin/skills/postgresql-best-practices/references/azure-postgresql-restore-deleted-server.md",
+      "platform_scope": "azure-postgresql",
+      "activation_keywords": [
+        "deleted server",
+        "deleted flexible server",
+        "deleted my server",
+        "deleted my flexible server",
+        "deleted the server",
+        "server was deleted",
+        "restore deleted",
+        "recover deleted",
+        "undelete",
+        "revivedropped",
+        "dropped server",
+        "deletion protection",
+        "prevent accidental deletion",
+        "cannotdelete"
+      ],
+      "always_load": false
+    },
+    {
       "id": "networking-ssl",
       "path": "plugin/skills/postgresql-best-practices/references/azure-postgresql-networking-ssl.md",
       "platform_scope": "azure-postgresql",

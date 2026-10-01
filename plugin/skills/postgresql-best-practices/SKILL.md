@@ -48,11 +48,11 @@ When guidance needs Azure CLI and shell access exists:
 - Execute read-only `az` commands directly. Before any state-changing command, show the subscription, target, and impact and ask "Proceed?"
 - For destructive or disruptive actions, also explain applicable downtime, replacement-resource, authentication, and data-loss implications.
 - Always pass `--subscription <id>`.
-- If target server or resource group is unknown, **always discover before prompting the user**:
+- If target server or resource group is unknown, **discover before asking**:
   ```bash
   az postgres flexible-server list --query "[].{name:name, resourceGroup:resourceGroup, location:location, version:version}" -o table
   ```
-  Use the discovered `resourceGroup` and `name`; ask the user only if multiple servers make the target ambiguous.
+  Ask only if multiple servers make the target ambiguous.
 - If shell access is unavailable, provide numbered manual commands.
 
 ---
@@ -106,6 +106,7 @@ These skills apply to any PostgreSQL deployment — self-hosted, RDS, Cloud SQL,
 | built-in PgBouncer, azure connection pooling, pool_mode azure Flexible Server, connection pooling azure | [azure-postgresql-connection-pooling](references/azure-postgresql-connection-pooling.md) | Azure built-in PgBouncer. Generic `postgresql-connection-management` covers standalone PgBouncer |
 | provision Flexible Server, az postgres create, resize azure postgres, Burstable, GeneralPurpose, MemoryOptimized, IOPS scaling, Terraform azure postgres, create azure postgres, create a new server, max_connections azure, scale down, scale storage, shrink storage, scale up, change tier, change SKU, increase compute, increase vCores, upgrade tier, server configuration, compute tier, storage tier, resize server, server sizing | [azure-postgresql-provisioning](references/azure-postgresql-provisioning.md) | Azure-specific. No generic equivalent. |
 | zone redundant HA, zone-redundant, failover azure, PITR, read replica azure, geo-restore, backup azure postgres, high availability azure postgres, same-zone HA | [azure-postgresql-ha-disaster-recovery](references/azure-postgresql-ha-disaster-recovery.md) | Azure HA/DR. No generic equivalent. |
+| deleted server, deleted my server, deleted my Flexible Server, restore deleted, undelete, ReviveDropped, deletion protection, CanNotDelete | [azure-postgresql-restore-deleted-server](references/azure-postgresql-restore-deleted-server.md) | Deleted server (5-day window), delete locks. Live server → HA/DR PITR |
 | Private Link, VNet, firewall rule azure, SSL azure, TLS azure, public access azure, private endpoint postgres, network access azure, can't connect, connection refused azure, SSL connection is required, certificate verify failed, connection timeout azure, network connectivity azure, allow IP, whitelist IP | [azure-postgresql-networking-ssl](references/azure-postgresql-networking-ssl.md) | Azure networking. No generic equivalent. |
 | Query Store, index recommendations, performance insights, intelligent tuning, query performance azure, slow queries azure, indexes Azure PostgreSQL recommends | [azure-postgresql-intelligent-tuning](references/azure-postgresql-intelligent-tuning.md) | Azure-specific monitoring. Generic `postgresql-query-performance` covers EXPLAIN-based tuning |
 | major version upgrade, maintenance window, in-place upgrade, MVU, upgrade postgres azure, schedule maintenance, upgrade my Azure PostgreSQL, upgrade from version | [azure-postgresql-upgrades-maintenance](references/azure-postgresql-upgrades-maintenance.md) | Azure-specific. No generic equivalent. |
@@ -119,7 +120,7 @@ These skills apply to any PostgreSQL deployment — self-hosted, RDS, Cloud SQL,
 
 ## Graph Workloads (Apache AGE)
 
-For anything involving a property graph on PostgreSQL, route to the sibling **pg-graph** skill: Apache AGE, openCypher, `ag_catalog`, knowledge graphs, ontology, graph traversal, and natural language to Cypher. That skill owns AGE setup, the `ag_catalog.cypher()` wrapping contract, graph schema introspection, and retrieval that combines vectors with graph traversal. Keep AGE specific guidance there rather than duplicating it here.
+Route property-graph work (Apache AGE, openCypher, `ag_catalog`, knowledge graphs, ontology, graph traversal, natural language to Cypher) to the sibling **pg-graph** skill. It owns AGE setup, the `ag_catalog.cypher()` wrapping contract, graph schema introspection, and graph + vector retrieval; keep AGE guidance there.
 
 ---
 
@@ -131,7 +132,7 @@ For anything involving a property graph on PostgreSQL, route to the sibling **pg
 - Connection pooling → Azure built-in pooler uses `azure-postgresql-connection-pooling`; otherwise `postgresql-connection-management`
 - Azure-only topics like Entra ID, provisioning, HA, networking, upgrades → route to matching `azure-*` skill only when `isAzure: true`
 - Generic topics like indexing, JSONB, partitioning, RLS, FTS, replication → use `postgresql-*`
-- Graph topics like Apache AGE, openCypher, `ag_catalog`, knowledge graphs, ontology, graph traversal → route to the `pg-graph` skill
+- Graph topics → `pg-graph` skill (see above)
 
 ---
 
